@@ -103,17 +103,14 @@ class Game
     // compose a scene
     public void CreateScene()
     {
-        SceneObject tp = new SceneObject(teapot, shader, wood, go, toWorld, world);
-        SceneObject fl = new SceneObject(floor, shader, wood, go, toWorld, world);
-        /*
-        SceneObject tp = new SceneObject(teapot, shader, wood, new Matrix4(1, 1, 1, 1,
-                                                                           1, 1, 1, 1,
-                                                                           1, 1, 1, 1,
-                                                                           1, 1, 1, 1), world);
-        SceneObject fl = new SceneObject(floor, shader, wood, new Matrix4(1, 1, 1, 1,
-                                                                           1, 1, 1, 1,
-                                                                           1, 1, 1, 1,
-                                                                           1, 1, 1, 1), world);
-        */
+
+        SceneObject tp = new SceneObject(teapot, shader, wood, new Matrix4(1, 0, 0, 0,
+                                                                           0, 1, 0, 0,
+                                                                           0, 0, 1, 0,
+                                                                           0, 0, 0, 1), toWorld, world);
+        SceneObject fl = new SceneObject(floor, shader, wood, new Matrix4(1, 0, 0, 0,
+                                                                          0, 1, 0, 0,
+                                                                          0, 0, 1, 0,
+                                                                          0, 0, 0, 1), toWorld, world);
     }
 }

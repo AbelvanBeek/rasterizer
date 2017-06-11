@@ -11,6 +11,7 @@ class SceneObject
     Shader shader;
     Texture texture;
     public Matrix4 transform;
+    public Matrix4 mainTransform;
     public Matrix4 toWorld;
     SceneObject parent;
 
@@ -27,12 +28,16 @@ class SceneObject
 
         if (parent != null)
         {
-            this.transform = transform;// * parent.transform;
+            this.transform = transform * parent.transform;
             this.parent = parent;
 
             parent.children.Add(this);
+        }else
+        {
+            this.transform = transform;
         }
 
+        mainTransform = transform;
         SceneGraph.sceneObjects.Add(this);
     }
 
@@ -40,7 +45,7 @@ class SceneObject
     {
         if (mesh != null)
         {
-            transform = transform;// * parent.transform;
+            transform = mainTransform * parent.transform;
             mesh.Render(shader, transform, toWorld, texture);
         }
 
