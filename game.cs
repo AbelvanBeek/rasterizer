@@ -77,6 +77,16 @@ class Game
         timer.Reset();
         timer.Start();
 
+        // working object location
+        go = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)Math.Sin(a));
+        toWorld = go;
+        go *= Matrix4.CreateTranslation(0, -4, -15);
+        go *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
+
+        // prepare scene
+        world = new SceneObject(null, null, null, go, toWorld, null);
+        CreateScene();
+
         // update rotation
         a += 0.001f * frameDuration;
         if (a > 2 * PI) a -= 2 * PI;
