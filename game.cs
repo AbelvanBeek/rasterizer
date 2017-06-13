@@ -52,10 +52,10 @@ class Game
         toWorld = go;
         go *= Matrix4.CreateTranslation(0, -4, -15);
         go *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
-        // light preparation
-        int lightID = GL.GetUniformLocation(shader.programID, "lightPos");
+        // ambient light preparation
+        int ambientID = GL.GetUniformLocation(shader.programID, "ambientColor");
         GL.UseProgram(shader.programID);
-        GL.Uniform3(lightID, 0.0f, 5.0f, 10f);
+        GL.Uniform3(ambientID, 0.4f, 0.1f, 0.0f);
         // prepare scene
         world = new SceneObject(null, null, null, go, toWorld, null);
         CreateScene();
@@ -78,7 +78,7 @@ class Game
         timer.Start();
 
         // working object location
-        go = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), (float)Math.Sin(a));
+        go = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
         toWorld = go;
         go *= Matrix4.CreateTranslation(0, -4, -15);
         go *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
@@ -122,5 +122,23 @@ class Game
                                                                           0, 1, 0, 0,
                                                                           0, 0, 1, 0,
                                                                           0, 0, 0, 1), toWorld, world);
+
+        // sorry for the code
+        Light light0 = new Light(0, new Vector3(10, 3, 0), new Vector3(10.0f, 10.0f, 10.0f), shader, new Matrix4(1, 0, 0, 0,
+                                                                                                                 0, 1, 0, 0,
+                                                                                                                 0, 0, 1, 0,
+                                                                                                                 0, 0, 0, 1), toWorld, world);
+        Light light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, new Matrix4(1, 0, 0, 0,
+                                                                                                                0, 1, 0, 0,
+                                                                                                                0, 0, 1, 0,
+                                                                                                                0, 0, 0, 1), toWorld, world);
+        Light light2 = new Light(2, new Vector3(0, 3, 10), new Vector3(0.0f, 10.0f, 0.0f), shader, new Matrix4(1, 0, 0, 0,
+                                                                                                               0, 1, 0, 0,
+                                                                                                               0, 0, 1, 0,
+                                                                                                               0, 0, 0, 1), toWorld, world);
+        Light light3 = new Light(3, new Vector3(0, 3, -10), new Vector3(10.0f, 0.0f, 0.0f), shader, new Matrix4(1, 0, 0, 0,
+                                                                                                                0, 1, 0, 0,
+                                                                                                                0, 0, 1, 0,
+                                                                                                                0, 0, 0, 1), toWorld, world);
     }
 }
