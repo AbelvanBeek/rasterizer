@@ -21,7 +21,7 @@ class GraphObjects
 
         if (parent != null)
         {
-            this.transform = transform * parent.transform;
+            this.transform = parent.transform * transform;
             this.parent = parent;
 
             parent.children.Add(this);

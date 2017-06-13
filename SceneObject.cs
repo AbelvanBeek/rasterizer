@@ -22,7 +22,7 @@ class SceneObject : GraphObjects
     {
         if (mesh != null)
         {
-            transform = mainTransform * parent.transform;
+            transform = parent.transform * mainTransform;
             mesh.Render(shader, transform, toWorld, texture);
         }
 
