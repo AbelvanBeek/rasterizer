@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 class SceneGraph
 {
 
-    public static List<SceneObject> sceneObjects;
+    public static List<GraphObjects> graphObjects;
 
     public SceneGraph()
     {
-        sceneObjects = new List<SceneObject>();
+        graphObjects = new List<GraphObjects>();
     }
 
-    public void RenderHierarchy(SceneObject obj)
+    public void RenderHierarchy(GraphObjects obj)
     {
         obj.Render();
 
-        foreach(SceneObject child in obj.children)
+        foreach(GraphObjects child in obj.children)
         {
             RenderHierarchy(child);
         }
