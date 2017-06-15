@@ -90,7 +90,7 @@ class Game
         // working object location
         worldMatrix = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
         toWorld = worldMatrix;
-        worldMatrix *= Matrix4.CreateTranslation(0 + transLX, -5 + transLY, -15 + transLZ);
+        worldMatrix *= Matrix4.CreateTranslation(0 + transLX, -10 + transLY, -30 + transLZ);
         worldMatrix *= rotation;
         worldMatrix *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
 
@@ -130,8 +130,8 @@ class Game
         SceneObject fl = new SceneObject(floor, shader, wood, Matrix4.Identity, toWorld, world);
 
         // sorry for the code
-        Light light0 = new Light(0, new Vector3(10, 3, 0), new Vector3(10.0f, 10.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
-        Light light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
+        Light light0 = new Light(0, new Vector3(0, 0, 5), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, camera);
+        Light light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, tp);
         Light light2 = new Light(2, new Vector3(0, 3, 10), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
         Light light3 = new Light(3, new Vector3(0, 3, -10), new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
     }
