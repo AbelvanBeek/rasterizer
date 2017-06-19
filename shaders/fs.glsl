@@ -4,6 +4,8 @@
 in vec2 uv;						// interpolated texture coordinates
 in vec4 normal;					// interpolated normal
 in vec4 worldPos;
+in float spec;
+
 uniform sampler2D pixels;		// texture sampler
 uniform vec3 ambientColor;		// ambient light color
 
@@ -37,7 +39,7 @@ void main()
 	vec3 R0 = normalize(-(L0 -2*(dot(L0, normal.xyz)*normal.xyz)));
 	vec4 specColor0 = vec4(lightColor0, 1) * pow(max(dot(R0, L0), 0.0), 0.3*100) * (materialColor0, 1);
 	specColor0 = clamp(specColor0, 0.0, 1.0);
-	outputColor += vec4( materialColor0 * max( 0.0f, dot( L0, normal.xyz ) ) * attenuation0 * lightColor0, 1 ) + specColor0;
+	outputColor += vec4( materialColor0 * max( 0.0f, dot( L0, normal.xyz ) ) * attenuation0 * lightColor0, 1 ) + specColor0 * spec;
 
 	vec3 L1 = lightPos1 - worldPos.xyz;
 	float dist1 = L1.length();
@@ -47,7 +49,7 @@ void main()
 	vec3 R1 = normalize(-(L1 -2*(dot(L1, normal.xyz)*normal.xyz)));
 	vec4 specColor1 = vec4(lightColor1, 1) * pow(max(dot(R1, L1), 0.0), 0.3*100) * (materialColor1, 1);
 	specColor1 = clamp(specColor1, 0.0, 1.0);
-	outputColor += vec4( materialColor1 * max( 0.0f, dot( L1, normal.xyz ) ) * attenuation1 * lightColor1, 1 ) + specColor1;
+	outputColor += vec4( materialColor1 * max( 0.0f, dot( L1, normal.xyz ) ) * attenuation1 * lightColor1, 1 ) + specColor1 * spec;
 
 	vec3 L2 = lightPos2 - worldPos.xyz;
 	float dist2 = L2.length();
@@ -57,7 +59,7 @@ void main()
 	vec3 R2 = normalize(-(L2 -2*(dot(L2, normal.xyz)*normal.xyz)));
 	vec4 specColor2 = vec4(lightColor2, 1) * pow(max(dot(R2, L2), 0.0), 0.3*100) * (materialColor2, 1);
 	specColor2 = clamp(specColor2, 0.0, 1.0);
-	outputColor += vec4( materialColor2 * max( 0.0f, dot( L2, normal.xyz ) ) * attenuation2 * lightColor2, 1 ) + specColor2;
+	outputColor += vec4( materialColor2 * max( 0.0f, dot( L2, normal.xyz ) ) * attenuation2 * lightColor2, 1 ) + specColor2 * spec;
 
 	vec3 L3 = lightPos3 - worldPos.xyz;
 	float dist3 = L3.length();
@@ -67,7 +69,7 @@ void main()
 	vec3 R3 = normalize(-(L3 -2*(dot(L3, normal.xyz)*normal.xyz)));
 	vec4 specColor3 = vec4(lightColor3, 1) * pow(max(dot(R3, L3), 0.0), 0.3*100) * (materialColor3, 1);
 	specColor3 = clamp(specColor3, 0.0, 1.0);
-	outputColor += vec4( materialColor3 * max( 0.0f, dot( L3, normal.xyz ) ) * attenuation3 * lightColor3, 1 ) + specColor3;
+	outputColor += vec4( materialColor3 * max( 0.0f, dot( L3, normal.xyz ) ) * attenuation3 * lightColor3, 1 ) + specColor3 * spec;
 
 	outputColor += vec4(ambientColor, 1);
 }

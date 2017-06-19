@@ -39,5 +39,6 @@ class GraphObjects
 
     public virtual void Render()
     {
+        transform = parent.transform * mainTransform;
     }
 }
