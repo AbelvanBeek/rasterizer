@@ -12,13 +12,18 @@ class Game
 {
     // member variables
     public Surface screen;                  // background surface for printing etc.
-    Mesh teapot, floor;                     // a mesh to draw using OpenGL
+    Mesh teapot, floor, sphere;             // a mesh to draw using OpenGL
     const float PI = 3.1415926535f;         // PI
     float a = 0;                            // teapot rotation angle
+
     Stopwatch timer;                        // timer for measuring frame duration
     Shader shader;                          // shader to use for rendering
+    Shader skyshader;                       // shader for skydome
     Shader postproc;                        // shader to use for post processing
+
     Texture wood;                           // texture to use for rendering
+    Texture skytex;
+
     RenderTarget target;                    // intermediate render target
     ScreenQuad quad;                        // screen filling quad for post processing
     bool useRenderTarget = true;
@@ -32,7 +37,6 @@ class Game
     Matrix4 toWorld;                        // transform to world coordinates
 
     Matrix4 rotation;                       // rotate world
-
     float transFX = 0, transFY = 0, transFZ = 0, transLX = 0, transLY = 0, transLZ = 0;
 
     // initialize
@@ -41,32 +45,40 @@ class Game
         // load teapot
         teapot = new Mesh("../../assets/teapot.obj");
         floor = new Mesh("../../assets/floor.obj");
+        sphere = new Mesh("../../assets/sphere.obj");
+
         // initialize stopwatch
         timer = new Stopwatch();
         timer.Reset();
         timer.Start();
+
         // create shaders
         shader = new Shader("../../shaders/vs.glsl", "../../shaders/fs.glsl");
+        skyshader = new Shader("../../shaders/vs_skydome.glsl", "../../shaders/fs_skydome.glsl");
         postproc = new Shader("../../shaders/vs_post.glsl", "../../shaders/fs_post.glsl");
+
         // load a texture
         wood = new Texture("../../assets/wood.jpg");
+        skytex = new Texture("../../assets/behind.png");
+
         // create the render target
         target = new RenderTarget(screen.width, screen.height);
         quad = new ScreenQuad();
+
         // create scenegraph and main object
         sceneGraph = new SceneGraph();
+
         // initialize matrices
+        rotation = Matrix4.Identity;
         cameraMatrix = Matrix4.LookAt(new Vector3(0, 5, 20), new Vector3(0, 0, 1), new Vector3(0, 1, 0));
-        worldMatrix = new Matrix4(1, 0, 0, 0,
-                                  0, 1, 0, 0,
-                                  0, 0, 1, 0,
-                                  0, 0, 0, 1);
+        worldMatrix = Matrix4.Identity;
         toWorld = worldMatrix;
-        cameraMatrix *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
+
         // ambient light preparation
         int ambientID = GL.GetUniformLocation(shader.programID, "ambientColor");
         GL.UseProgram(shader.programID);
         GL.Uniform3(ambientID, 0.4f, 0.1f, 0.0f);
+
         // prepare scene
         camera = new SceneObject(null, null, 0, null, cameraMatrix, toWorld, null);
         world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
@@ -91,10 +103,14 @@ class Game
         timer.Reset();
         timer.Start();
 
+        //toWorld = worldMatrix;
+
+        camera.transform = cameraMatrix * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
+        world.transform = worldMatrix;
         // prepare scene
-        camera = new SceneObject(null, null, 0, null, cameraMatrix, toWorld, null);
-        world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
-        CreateScene();
+        //camera = new SceneObject(null, null, 0, null, cameraMatrix * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000), Matrix4.Identity, null);
+        //world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
+        //CreateScene();
 
         // update rotation
         a += 0.001f * frameDuration;
@@ -122,11 +138,14 @@ class Game
     // compose a scene
     public void CreateScene()
     {
-
+        // objects
         SceneObject tp = new SceneObject(teapot, shader, 1, wood, Matrix4.Identity, toWorld, world);
         SceneObject fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, world);
 
-        // sorry for the code
+        // skydome
+        SceneObject skydome1 = new SceneObject(sphere, skyshader, 0, skytex, Matrix4.CreateScale(100f), toWorld, world);
+
+        //  lights
         Light light0 = new Light(0, new Vector3(0, 0, 5), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
         Light light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
         Light light2 = new Light(2, new Vector3(0, 3, 10), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
@@ -138,33 +157,24 @@ class Game
         KeyboardState k = Keyboard.GetState();
         //working left right up down zoom in zoom out
         if (k.IsKeyDown(Key.Up))
-            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(0, -0.01f, 0));
+            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(0, -0.1f, 0));
         if (k.IsKeyDown(Key.Down))
-            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(0, 0.01f, 0));
+            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(0, 0.1f, 0));
         if (k.IsKeyDown(Key.Left))
-            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(0.01f, 0, 0));
+            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(0.1f, 0, 0));
         if (k.IsKeyDown(Key.Right))
-            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(-0.01f, 0, 0));
+            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(-0.1f, 0, 0));
         if (k.IsKeyDown(Key.Plus))
             worldMatrix *= new Matrix4(1, 0, 0, 0,
                                        0, 1, 0, 0,
-                                       0, 0, 1, -0.01f,
+                                       0, 0, 1, -0.1f,
                                        0, 0, 0, 1);
         if (k.IsKeyDown(Key.Minus))
             worldMatrix *= new Matrix4(1, 0, 0, 0,
                                        0, 1, 0, 0,
-                                       0, 0, 1, 0.01f,
+                                       0, 0, 1, 0.1f,
                                        0, 0, 0, 1);
 
-        if (k.IsKeyDown(Key.A))
-        {
-            cameraMatrix *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), 0.11f);
-        }
-
-        if (k.IsKeyDown(Key.D))
-            cameraMatrix *= Matrix4.CreateRotationY(-0.1f);
-
-        /*
         if (k.IsKeyDown(Key.W) || k.IsKeyDown(Key.A) || k.IsKeyDown(Key.S) || k.IsKeyDown(Key.D))
         {
             rotation = Matrix4.Identity;
@@ -178,9 +188,7 @@ class Game
                 transFY += 0.01f;
             rotation *= Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), transFX);
             rotation *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), transFY);
-            rotation *= Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), transFX);
-            rotation *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), transFY);
         }
-        */
+        
     }
 }
