@@ -57,15 +57,16 @@ class Game
         sceneGraph = new SceneGraph();
         // initialize matrices
         cameraMatrix = Matrix4.Identity;
-        worldMatrix = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
+        worldMatrix = Matrix4.Identity;
         rotation = Matrix4.Identity;
+        toWorld = cameraMatrix;
         // ambient light preparation
         int ambientID = GL.GetUniformLocation(shader.programID, "ambientColor");
         GL.UseProgram(shader.programID);
         GL.Uniform3(ambientID, 0.4f, 0.1f, 0.0f);
         // prepare scene
         camera = new SceneObject(null, null, null, cameraMatrix, toWorld, null);
-        world = new SceneObject(null, null, null, Matrix4.Identity, toWorld, camera);
+        world = new SceneObject(null, null, null, worldMatrix, toWorld, camera);
         CreateScene();
     }
 
@@ -88,16 +89,15 @@ class Game
         timer.Start();
 
         // working object location
-        worldMatrix = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
-        toWorld = worldMatrix;
-        worldMatrix *= Matrix4.CreateTranslation(0 + transLX, -10 + transLY, -30 + transLZ);
-        worldMatrix *= rotation;
-        worldMatrix *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
+        //worldMatrix =  Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
+        //worldMatrix *= Matrix4.CreateTranslation(0 + transLX, -5 + transLY, -15 + transLZ);
+        //worldMatrix *= rotation;
+        //worldMatrix *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
 
         // prepare scene
-        camera = new SceneObject(null, null, null, cameraMatrix, toWorld, null);
-        world = new SceneObject(null, null, null, worldMatrix, toWorld, camera);
-        CreateScene();
+        //camera = new SceneObject(null, null, null, cameraMatrix, toWorld, null);
+        world.transform = worldMatrix * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a) * Matrix4.CreateTranslation(0 + transLX, -5 + transLY, -15 + transLZ) * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
+        //CreateScene();
 
         // update rotation
         a += 0.001f * frameDuration;
@@ -127,11 +127,11 @@ class Game
     {
 
         SceneObject tp = new SceneObject(teapot, shader, wood, Matrix4.Identity, toWorld, world);
-        SceneObject fl = new SceneObject(floor, shader, wood, Matrix4.Identity, toWorld, world);
+        SceneObject fl = new SceneObject(floor, shader, wood, Matrix4.CreateTranslation(0,0,0), toWorld, world);
 
         // sorry for the code
-        Light light0 = new Light(0, new Vector3(0, 0, 5), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, camera);
-        Light light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, tp);
+        Light light0 = new Light(0, new Vector3(0, 0, 5), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
+        Light light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
         Light light2 = new Light(2, new Vector3(0, 3, 10), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
         Light light3 = new Light(3, new Vector3(0, 3, -10), new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
     }
@@ -158,8 +158,6 @@ class Game
                 transFX += 0.01f;
             if (k.IsKeyDown(Key.D))
                 transFY += 0.01f;
-            rotation *= Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), transFX);
-            rotation *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), transFY);
             rotation *= Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), transFX);
             rotation *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), transFY);
         }

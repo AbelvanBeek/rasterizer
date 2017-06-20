@@ -32,6 +32,6 @@ class Light : GraphObjects
 
     public override void Render()
     {
-        transform = mainTransform * parent.transform;
+        //transform = parent.transform * mainTransform;
     }
 }
