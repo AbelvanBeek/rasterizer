@@ -21,17 +21,13 @@ class GraphObjects
 
         if (parent != null)
         {
-            this.transform = parent.transform * transform;
             this.parent = parent;
 
             parent.children.Add(this);
         }
-        else
-        {
             this.transform = transform;
-        }
 
-        mainTransform = transform;
+        //mainTransform = transform;
         SceneGraph.graphObjects.Add(this);
 
         children = new List<GraphObjects>();

@@ -69,11 +69,10 @@ class Game
         sceneGraph = new SceneGraph();
 
         // initialize matrices
-        rotation = Matrix4.Identity;
-        cameraMatrix = Matrix4.LookAt(new Vector3(0, 5, 20), new Vector3(0, 0, 1), new Vector3(0, 1, 0));
+        cameraMatrix = Matrix4.Identity;
         worldMatrix = Matrix4.Identity;
-        toWorld = worldMatrix;
-
+        rotation = Matrix4.Identity;
+        toWorld = cameraMatrix;
         // ambient light preparation
         int ambientID = GL.GetUniformLocation(shader.programID, "ambientColor");
         GL.UseProgram(shader.programID);
@@ -103,13 +102,8 @@ class Game
         timer.Reset();
         timer.Start();
 
-        //toWorld = worldMatrix;
 
-        camera.transform = cameraMatrix * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
-        world.transform = worldMatrix;
-        // prepare scene
-        //camera = new SceneObject(null, null, 0, null, cameraMatrix * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000), Matrix4.Identity, null);
-        //world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
+        world.transform = worldMatrix * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a) * Matrix4.CreateTranslation(0 + transLX, -5 + transLY, -15 + transLZ) * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
         //CreateScene();
 
         // update rotation
@@ -143,7 +137,7 @@ class Game
         SceneObject fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, world);
 
         // skydome
-        SceneObject skydome1 = new SceneObject(sphere, skyshader, 0, skytex, Matrix4.CreateScale(100f), toWorld, world);
+        SceneObject skydome1 = new SceneObject(sphere, shader, 0, skytex, Matrix4.CreateScale(100f), toWorld, world);
 
         //  lights
         Light light0 = new Light(0, new Vector3(0, 0, 5), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
@@ -156,27 +150,16 @@ class Game
     {
         KeyboardState k = Keyboard.GetState();
         //working left right up down zoom in zoom out
-        if (k.IsKeyDown(Key.Up))
-            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(0, -0.1f, 0));
+       	if (k.IsKeyDown(Key.Up))
+            transLY -= 0.1f;
         if (k.IsKeyDown(Key.Down))
-            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(0, 0.1f, 0));
+            transLY += 0.1f;
         if (k.IsKeyDown(Key.Left))
-            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(0.1f, 0, 0));
+            transLX += 0.1f;
         if (k.IsKeyDown(Key.Right))
-            cameraMatrix *= Matrix4.CreateTranslation(new Vector3(-0.1f, 0, 0));
-        if (k.IsKeyDown(Key.Plus))
-            worldMatrix *= new Matrix4(1, 0, 0, 0,
-                                       0, 1, 0, 0,
-                                       0, 0, 1, -0.1f,
-                                       0, 0, 0, 1);
-        if (k.IsKeyDown(Key.Minus))
-            worldMatrix *= new Matrix4(1, 0, 0, 0,
-                                       0, 1, 0, 0,
-                                       0, 0, 1, 0.1f,
-                                       0, 0, 0, 1);
-
+            transLX -= 0.1f;
         if (k.IsKeyDown(Key.W) || k.IsKeyDown(Key.A) || k.IsKeyDown(Key.S) || k.IsKeyDown(Key.D))
-        {
+       {
             rotation = Matrix4.Identity;
             if (k.IsKeyDown(Key.W))
                 transFX -= 0.01f;
