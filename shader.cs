@@ -12,6 +12,7 @@ public class Shader
     public int attribute_vuvs;
     public int uniform_mview;
     public int uniform_2wrld;
+    public int uniform_specness;
 
     // constructor
     public Shader(String vertexShader, String fragmentShader)
@@ -29,6 +30,7 @@ public class Shader
         attribute_vuvs = GL.GetAttribLocation(programID, "vUV");
         uniform_mview = GL.GetUniformLocation(programID, "transform");
         uniform_2wrld = GL.GetUniformLocation(programID, "toWorld");
+        uniform_specness = GL.GetUniformLocation(programID, "specness");
     }
 
     // loading shaders
