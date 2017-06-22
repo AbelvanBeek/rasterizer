@@ -8,14 +8,31 @@ uniform sampler2D pixels;		// input texture (1st pass render target)
 // shader output
 out vec3 outputColor;
 
+// vignette variables
+const vec3 vignetteColor = vec3(0.0, 0.0, 0.0); const float vignetteRadius = 0.75; const float vignetteSoftness = 0.35;
+
+// chromatic abberation variables
+const float chromaticIntensity = 0.35; const vec2 chromaticRed = vec2(0.01, 0); const vec2 chromaticGreen = vec2(0, 0.01); const vec2 chromaticBlue = vec2(0.01, 0.01);
+
 void main()
 {
+	// screen center
+	vec2 center = gl_FragCoord.xy/vec2(1920, 1000) - vec2(0.5);
+
 	// retrieve input pixel
 	outputColor = texture( pixels, uv ).rgb;
-	// apply dummy postprocessing effect
-	//float dx = P.x - 0.5, dy = P.y - 0.5;
-	//float distance = sqrt( dx * dx + dy * dy );
-	//outputColor *= sin( distance * 200.0f ) * 0.25f + 0.75f;
+
+	// apply chromatic abberation
+	vec3 rValue = texture(pixels, uv - (chromaticRed * (uv - center)) * chromaticIntensity).rgb;
+	vec3 gValue = texture(pixels, uv - (chromaticGreen * (uv - center)) * chromaticIntensity).rgb;
+	vec3 bValue = texture(pixels, uv - (chromaticBlue * (uv - center)) * chromaticIntensity).rgb;
+	outputColor =  vec3(rValue.r, gValue.g, bValue.b);
+
+
+	// apply vignette
+	float vignetteLength = length(center);
+	float vignette = smoothstep(vignetteRadius, vignetteRadius - vignetteSoftness, vignetteLength);
+	outputColor = mix(outputColor, outputColor * vignette, 0.6);
 }
 
 // EOF

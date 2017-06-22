@@ -59,7 +59,7 @@ class Game
 
         // load a texture
         wood = new Texture("../../assets/wood.jpg");
-        skytex = new Texture("../../assets/behind.png");
+        skytex = new Texture("../../assets/space.jpg");
 
         // create the render target
         target = new RenderTarget(screen.width, screen.height);
@@ -107,7 +107,7 @@ class Game
         //CreateScene();
 
         // update rotation
-        a += 0.001f * frameDuration;
+        //a += 0.001f * frameDuration;
         if (a > 2 * PI) a -= 2 * PI;
 
         if (useRenderTarget)
@@ -137,7 +137,7 @@ class Game
         SceneObject fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, world);
 
         // skydome
-        SceneObject skydome1 = new SceneObject(sphere, shader, 0, skytex, Matrix4.CreateScale(100f), toWorld, world);
+        SceneObject skydome1 = new SceneObject(sphere, skyshader, 0, skytex, Matrix4.Identity, toWorld, world);
 
         //  lights
         Light light0 = new Light(0, new Vector3(0, 0, 5), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
@@ -158,6 +158,10 @@ class Game
             transLX += 0.1f;
         if (k.IsKeyDown(Key.Right))
             transLX -= 0.1f;
+        if (k.IsKeyDown(Key.Plus))
+            transLZ += 0.1f;
+        if (k.IsKeyDown(Key.Minus))
+            transLZ -= 0.1f;
         if (k.IsKeyDown(Key.W) || k.IsKeyDown(Key.A) || k.IsKeyDown(Key.S) || k.IsKeyDown(Key.D))
        {
             rotation = Matrix4.Identity;
