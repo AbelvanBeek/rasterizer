@@ -12,7 +12,7 @@ out vec3 outputColor;
 const vec3 vignetteColor = vec3(0.0, 0.0, 0.0); const float vignetteRadius = 0.75; const float vignetteSoftness = 0.35;
 
 // chromatic abberation variables
-const float chromaticIntensity = 0.35; const vec2 chromaticRed = vec2(0.01, 0); const vec2 chromaticGreen = vec2(0, 0.01); const vec2 chromaticBlue = vec2(0.01, 0.01);
+const float chromaticIntensity = 0.5; const vec2 chromaticRed = vec2(0.01, 0); const vec2 chromaticGreen = vec2(0, 0.01); const vec2 chromaticBlue = vec2(0.01, 0.01);
 
 void main()
 {
@@ -27,7 +27,8 @@ void main()
 	vec3 gValue = texture(pixels, uv - (chromaticGreen * (uv - center)) * chromaticIntensity).rgb;
 	vec3 bValue = texture(pixels, uv - (chromaticBlue * (uv - center)) * chromaticIntensity).rgb;
 	outputColor =  vec3(rValue.r, gValue.g, bValue.b);
-
+	
+	//outputColor = vec3(1.0, 1.0, 1.0);
 
 	// apply vignette
 	float vignetteLength = length(center);
