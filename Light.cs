@@ -32,6 +32,10 @@ class Light : GraphObjects
 
     public override void Render()
     {
-        //transform = parent.transform * mainTransform;
+        transform = mainTransform;
+        if (parent != null)
+            transform *= parent.transform;
+        GL.UseProgram(shader.programID);
+        GL.Uniform3(lightLocationID, position);
     }
 }

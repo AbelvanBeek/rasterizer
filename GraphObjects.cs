@@ -17,6 +17,7 @@ class GraphObjects
 
     public GraphObjects(Matrix4 transform, Matrix4 toWorld, GraphObjects parent)
     {
+        mainTransform = transform;
         this.toWorld = toWorld;
 
         if (parent != null)
@@ -27,7 +28,7 @@ class GraphObjects
         }
             this.transform = transform;
 
-        //mainTransform = transform;
+
         SceneGraph.graphObjects.Add(this);
 
         children = new List<GraphObjects>();
@@ -35,6 +36,11 @@ class GraphObjects
 
     public virtual void Render()
     {
-        transform = parent.transform * mainTransform;
+        //transform = parent.transform * mainTransform;
+    }
+    public Matrix4 MainTransform
+    {
+        get { return mainTransform; }
+        set { mainTransform = value; }
     }
 }

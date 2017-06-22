@@ -22,10 +22,12 @@ class SceneObject : GraphObjects
 
     public override void Render()
     {
+        transform = mainTransform;
+        if (parent != null)
+           transform *= parent.transform;
         if (mesh != null)
         {
-            //transform = parent.transform * mainTransform;
-            mesh.Render(shader, specness, parent.transform*transform , toWorld, texture);
+                mesh.Render(shader, specness, transform , toWorld, texture);
         }
 
     }

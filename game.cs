@@ -30,6 +30,7 @@ class Game
 
     SceneGraph sceneGraph;                  // create new scenegraph
     SceneObject camera;                     // camera on top of the hierarchy
+    SceneObject tp;
     Matrix4 cameraMatrix;                   // moving the camera
     SceneObject world;                      // main scene object containing others
     Matrix4 worldMatrix;                    // moving the world
@@ -79,7 +80,7 @@ class Game
         GL.Uniform3(ambientID, 0.4f, 0.1f, 0.0f);
 
         // prepare scene
-        camera = new SceneObject(null, null, 0, null, cameraMatrix, toWorld, null);
+        camera = new SceneObject(null, null, 0, null, Matrix4.CreateTranslation(0,0, 0), toWorld, null);
         world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
         CreateScene();
     }
@@ -103,11 +104,11 @@ class Game
         timer.Start();
 
 
-        world.transform = worldMatrix * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a) * Matrix4.CreateTranslation(0 + transLX, -5 + transLY, -15 + transLZ) * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
-        //CreateScene();
+        world.MainTransform = worldMatrix * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a) * Matrix4.CreateTranslation(0 + transLX, -5 + transLY, -15 + transLZ) * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
+        //p.MainTransform = world.mainTransform * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
 
         // update rotation
-        //a += 0.001f * frameDuration;
+        a += 0.001f * frameDuration;
         if (a > 2 * PI) a -= 2 * PI;
 
         if (useRenderTarget)
@@ -133,11 +134,11 @@ class Game
     public void CreateScene()
     {
         // objects
-        SceneObject tp = new SceneObject(teapot, shader, 1, wood, Matrix4.Identity, toWorld, world);
         SceneObject fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, world);
+        tp = new SceneObject(teapot, shader, 1, wood, Matrix4.CreateTranslation(-3,-2f,5), toWorld, world);
 
         // skydome
-        SceneObject skydome1 = new SceneObject(sphere, skyshader, 0, skytex, Matrix4.Identity, toWorld, world);
+        SceneObject skydome1 = new SceneObject(sphere, skyshader, 0, skytex, Matrix4.CreateTranslation(0, 0, -10) * Matrix4.CreateScale(10), toWorld, world);
 
         //  lights
         Light light0 = new Light(0, new Vector3(0, 0, 5), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
