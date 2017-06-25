@@ -8,21 +8,19 @@ class Light : GraphObjects
 {
     int lightLocationID;
     int id;
-    Vector3 position;
     Vector3 intensity;
     Shader shader;
 
-    public Light(int id, Vector3 position, Vector3 intensity, Shader shader, Matrix4 transform, Matrix4 toWorld, GraphObjects parent) : base(transform, toWorld, parent)
+    public Light(int id, Vector3 intensity, Shader shader, Matrix4 transform, Matrix4 toWorld, GraphObjects parent) : base(transform, toWorld, parent)
     {
         this.id = id;
-        this.position = position;
         this.intensity = intensity;
         this.shader = shader;
 
         // light preparation
         lightLocationID = GL.GetUniformLocation(shader.programID, "lightPos" + id);
         GL.UseProgram(shader.programID);
-        GL.Uniform3(lightLocationID, position);
+        GL.UniformMatrix4(lightLocationID, false, ref transform);
 
         // light preparation
         int lightColorID = GL.GetUniformLocation(shader.programID, "lightColor" + id);
@@ -32,10 +30,11 @@ class Light : GraphObjects
 
     public override void Render()
     {
-        transform = mainTransform;
+        transform = mainTransform * toWorld;
         if (parent != null)
-            transform *= parent.transform;
+            transform *= parent.transform.Inverted();
+
         GL.UseProgram(shader.programID);
-        GL.Uniform3(lightLocationID, position);
+        GL.UniformMatrix4(lightLocationID, false, ref transform);
     }
 }

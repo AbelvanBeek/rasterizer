@@ -74,6 +74,7 @@ class Game
         worldMatrix = Matrix4.Identity;
         rotation = Matrix4.Identity;
         toWorld = cameraMatrix;
+
         // ambient light preparation
         int ambientID = GL.GetUniformLocation(shader.programID, "ambientColor");
         GL.UseProgram(shader.programID);
@@ -104,11 +105,12 @@ class Game
         timer.Start();
 
 
-        world.MainTransform = worldMatrix * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a) * Matrix4.CreateTranslation(0 + transLX, -5 + transLY, -15 + transLZ) * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
-        //p.MainTransform = world.mainTransform * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
+        world.MainTransform = worldMatrix * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
+        toWorld = world.MainTransform;
+        world.MainTransform *= Matrix4.CreateTranslation(0, -5, -15) * rotation * Matrix4.CreateTranslation(transLX, transLY, transLZ) * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
 
         // update rotation
-        a += 0.001f * frameDuration;
+        a += 0.0001f * frameDuration;
         if (a > 2 * PI) a -= 2 * PI;
 
         if (useRenderTarget)
@@ -134,17 +136,17 @@ class Game
     public void CreateScene()
     {
         // objects
-        SceneObject fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, world);
-        tp = new SceneObject(teapot, shader, 1, wood, Matrix4.CreateTranslation(-3,-2f,5), toWorld, world);
+        tp = new SceneObject(teapot, shader, 1f, wood, Matrix4.CreateTranslation(-3,-2f,5), toWorld, world);
+        SceneObject fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, tp);
 
         // skydome
-        SceneObject skydome1 = new SceneObject(sphere, skyshader, 0, skytex, Matrix4.CreateTranslation(0, 0, -10) * Matrix4.CreateScale(10), toWorld, world);
+        SceneObject skydome1 = new SceneObject(teapot, skyshader, 0, skytex, Matrix4.CreateTranslation(0,-3,0) * Matrix4.CreateScale(100), toWorld, world);
 
         //  lights
-        Light light0 = new Light(0, new Vector3(0, 0, 5), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
-        Light light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
-        Light light2 = new Light(2, new Vector3(0, 3, 10), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
-        Light light3 = new Light(3, new Vector3(0, 3, -10), new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
+        Light light0 = new Light(0, new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.CreateTranslation(0, 0, -15), toWorld, world);
+        Light light1 = new Light(1, new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.CreateTranslation(0, 0, -15), toWorld, world);
+        Light light2 = new Light(2, new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.CreateTranslation(0, 0, -15), toWorld, world);
+        Light light3 = new Light(3, new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.CreateTranslation(0, 0, -15), toWorld, world);
     }
 
     public void HandleInput()
