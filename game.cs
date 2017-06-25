@@ -102,11 +102,11 @@ class Game
         float frameDuration = timer.ElapsedMilliseconds;
         timer.Reset();
         timer.Start();
+        Matrix4 transform = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
+        toWorld = transform;
+        world.MainTransform = transform * Matrix4.CreateTranslation(0, -5, -15) * rotation * Matrix4.CreateTranslation(transLX, transLY, transLZ) * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
 
-
-        world.MainTransform = worldMatrix * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a) * Matrix4.CreateTranslation(0 + transLX, -5 + transLY, -15 + transLZ) * rotation * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
-        //p.MainTransform = world.mainTransform * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
-
+        //tp.MainTransform = world.mainTransform * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
         // update rotation
         a += 0.001f * frameDuration;
         if (a > 2 * PI) a -= 2 * PI;
@@ -135,13 +135,13 @@ class Game
     {
         // objects
         SceneObject fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, world);
-        tp = new SceneObject(teapot, shader, 1, wood, Matrix4.CreateTranslation(-3,-2f,5), toWorld, world);
+        tp = new SceneObject(teapot, shader, 1, wood, Matrix4.CreateTranslation(0,0,0), toWorld, world);
 
         // skydome
-        SceneObject skydome1 = new SceneObject(sphere, skyshader, 0, skytex, Matrix4.CreateTranslation(0, 0, -10) * Matrix4.CreateScale(10), toWorld, world);
+        SceneObject skydome1 = new SceneObject(teapot, skyshader, 0, skytex, Matrix4.CreateTranslation(0, -3, 0) * Matrix4.CreateScale(100f), toWorld, camera);
 
         //  lights
-        Light light0 = new Light(0, new Vector3(0, 0, 5), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
+        Light light0 = new Light(0, new Vector3(0, 5, 5), new Vector3(20.0f, 20.0f, 20.0f), shader, Matrix4.Identity, toWorld, world);
         Light light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
         Light light2 = new Light(2, new Vector3(0, 3, 10), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
         Light light3 = new Light(3, new Vector3(0, 3, -10), new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);

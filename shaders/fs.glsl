@@ -30,17 +30,18 @@ void main()
 {
 	outputColor = vec4(0, 0, 0, 0);
 
-	vec3 L0 = lightPos0 - worldPos.xyz;
+	vec3 L0 = vec3(0,10,5) - worldPos.xyz;
 	float dist0 = L0.length();
 	L0 = normalize( L0 );
 	vec3 materialColor0 = texture( pixels, uv ).xyz;
 	float attenuation0 = 1.0f / (dist0 * dist0);
 
-	vec3 R0 = normalize(-(L0 -2*(dot(L0, normal.xyz)*normal.xyz)));
+	vec3 R0 = normalize((-worldPos.xyz -2*(dot(-worldPos.xyz, normal.xyz)*normal.xyz)));
 	vec4 specColor0 = vec4(lightColor0, 1) * pow(max(dot(R0, L0), 0.0), 0.3*100) * (materialColor0, 1);
 	specColor0 = clamp(specColor0, 0.0, 1.0);
 	outputColor += vec4( materialColor0 * max( 0.0f, dot( L0, normal.xyz ) ) * attenuation0 * lightColor0, 1 ) + specColor0 * spec;
 
+		/*
 	vec3 L1 = lightPos1 - worldPos.xyz;
 	float dist1 = L1.length();
 	L1 = normalize( L1 );
@@ -70,6 +71,7 @@ void main()
 	vec4 specColor3 = vec4(lightColor3, 1) * pow(max(dot(R3, L3), 0.0), 0.3*100) * (materialColor3, 1);
 	specColor3 = clamp(specColor3, 0.0, 1.0);
 	outputColor += vec4( materialColor3 * max( 0.0f, dot( L3, normal.xyz ) ) * attenuation3 * lightColor3, 1 ) + specColor3 * spec;
+	*/
 
 	outputColor += vec4(ambientColor, 1);
 }
