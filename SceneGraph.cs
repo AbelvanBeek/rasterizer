@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 class SceneGraph
 {
 
-    public static List<GraphObjects> graphObjects;
+    //public static List<GraphObjects> graphObjects;
 
     public SceneGraph()
     {
-        graphObjects = new List<GraphObjects>();
+        //graphObjects = new List<GraphObjects>();
     }
 
     public void RenderHierarchy(GraphObjects obj)

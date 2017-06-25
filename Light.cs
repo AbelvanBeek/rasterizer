@@ -32,6 +32,15 @@ class Light : GraphObjects
 
     public override void Render()
     {
+        // light preparation
+        lightLocationID = GL.GetUniformLocation(shader.programID, "lightPos" + id);
+        GL.UseProgram(shader.programID);
+        GL.Uniform3(lightLocationID, position);
+
+        // light preparation
+        int lightColorID = GL.GetUniformLocation(shader.programID, "lightColor" + id);
+        GL.UseProgram(shader.programID);
+        GL.Uniform3(lightColorID, intensity);
         transform = mainTransform;
         if (parent != null)
             transform *= parent.transform;
