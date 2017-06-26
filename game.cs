@@ -19,18 +19,19 @@ class Game
     Shader shader;                          // shader to use for rendering
     Shader postproc;                        // shader to use for post processing
     Texture wood;                           // texture to use for rendering
+    Texture skytex;
     RenderTarget target;                    // intermediate render target
     ScreenQuad quad;                        // screen filling quad for post processing
     bool useRenderTarget = true;
 
     SceneGraph sceneGraph;                  // create new scenegraph
-    SceneObject camera;                     // camera on top of the hierarchy
-    Matrix4 cameraMatrix;                   // moving the camera
-    SceneObject world;                      // main scene object containing others
+    public static SceneObject camera, world, tp, fl, skypot;      // Used sceneobjects
+    Matrix4 cameraMatrix;                   // moving the camera                    
+
     Light light0, light1, light2, light3;
     Matrix4 worldMatrix;                    // moving the world
 
-    Matrix4 toWorld;                        // transform to world coordinates
+    public static Matrix4 toWorld;                        // transform to world coordinates
 
     Matrix4 rotation;                       // rotate world
 
@@ -51,6 +52,7 @@ class Game
         postproc = new Shader("../../shaders/vs_post.glsl", "../../shaders/fs_post.glsl");
         // load a texture
         wood = new Texture("../../assets/wood.jpg");
+        skytex = new Texture("../../assets/space.jpg");
         // create the render target
         target = new RenderTarget(screen.width, screen.height);
         quad = new ScreenQuad();
@@ -65,8 +67,6 @@ class Game
         GL.UseProgram(shader.programID);
         GL.Uniform3(ambientID, 0.4f, 0.1f, 0.0f);
         // prepare scene
-        camera = new SceneObject(null, null, 0,  null, cameraMatrix, toWorld, null);
-        world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, null);
         CreateScene();
     }
 
@@ -89,15 +89,15 @@ class Game
         timer.Start();
 
         // working object location
-        Matrix4 transform = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
+        //split up for easier debugging
+        Matrix4 transform = Matrix4.Identity;
+        transform *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
         toWorld = transform;
-        transform = transform * Matrix4.CreateTranslation(0, -5, -15) * rotation * Matrix4.CreateTranslation(transLX, transLY, transLZ) * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
-        world.transform = transform;
+        transform *= Matrix4.CreateTranslation(0, -5, -15);
+        transform *= rotation; // rotation before movement makes the player move in the direction the camera is facing.
+        transform *= Matrix4.CreateTranslation(transLX, transLY, transLZ);
+        transform *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
         world.mainTransform = transform;
-        // prepare scene
-        //camera = new SceneObject(null, null, 0,  null, cameraMatrix, toWorld, null);
-        world = new SceneObject(null, null, 0, null, transform, toWorld, camera);
-        CreateScene();
 
         // update rotation
         a += 0.001f * frameDuration;
@@ -109,7 +109,7 @@ class Game
             target.Bind();
 
             // render scene to render target
-            sceneGraph.RenderHierarchy(world);
+            sceneGraph.RenderHierarchy(camera);
 
             // render quad
             target.Unbind();
@@ -118,19 +118,23 @@ class Game
         else
         {
             // render scene directly to the screen
-            sceneGraph.RenderHierarchy(world);
+            sceneGraph.RenderHierarchy(camera);
         }
     }
 
     // compose a scene
     public void CreateScene()
     {
+        camera = new SceneObject(null, null, 0, null, cameraMatrix, toWorld, null);
+        world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
 
-        SceneObject tp = new SceneObject(teapot, shader, 1,  wood, Matrix4.Identity, toWorld, world);
-        SceneObject fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, world);
+        tp = new SceneObject(teapot, shader, 1,  wood, Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), -a), toWorld, world);
+        fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, world);
+
+        skypot = new SceneObject(teapot, shader, 0, skytex, Matrix4.CreateScale(100), toWorld, world);
 
         // sorry for the code
-        light0 = new Light(0, new Vector3(0, 0, -10), new Vector3(10.0f, 10.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
+        light0 = new Light(0, new Vector3(0, 10, -10), new Vector3(10.0f, 10.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
         light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
         light2 = new Light(2, new Vector3(0, 3, 10), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
         light3 = new Light(3, new Vector3(0, 3, -10), new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);

@@ -30,7 +30,7 @@ void main()
 {
 	outputColor = vec4(0, 0, 0, 0);
 
-	vec3 L0 = vec3(0,10,5) - worldPos.xyz;
+	vec3 L0 = lightPos0 - worldPos.xyz;
 	float dist0 = L0.length();
 	L0 = normalize( L0 );
 	vec3 materialColor0 = texture( pixels, uv ).xyz;
