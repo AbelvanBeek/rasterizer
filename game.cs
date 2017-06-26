@@ -12,32 +12,29 @@ class Game
 {
     // member variables
     public Surface screen;                  // background surface for printing etc.
-    Mesh teapot, floor, sphere;             // a mesh to draw using OpenGL
+    Mesh teapot, floor;                     // a mesh to draw using OpenGL
     const float PI = 3.1415926535f;         // PI
     float a = 0;                            // teapot rotation angle
-
     Stopwatch timer;                        // timer for measuring frame duration
-    Shader shader;                          // shader to use for rendering
-    Shader skyshader;                       // shader for skydome
+    Shader shader, skyshader;                          // shader to use for rendering
     Shader postproc;                        // shader to use for post processing
-
     Texture wood;                           // texture to use for rendering
     Texture skytex;
-
     RenderTarget target;                    // intermediate render target
     ScreenQuad quad;                        // screen filling quad for post processing
     bool useRenderTarget = true;
 
     SceneGraph sceneGraph;                  // create new scenegraph
-    SceneObject camera;                     // camera on top of the hierarchy
-    SceneObject tp;
-    Matrix4 cameraMatrix;                   // moving the camera
-    SceneObject world;                      // main scene object containing others
+    public static SceneObject camera, world, tp, fl, skypot;      // Used sceneobjects
+    Matrix4 cameraMatrix;                   // moving the camera                    
+
+    Light light0, light1, light2, light3;
     Matrix4 worldMatrix;                    // moving the world
 
-    Matrix4 toWorld;                        // transform to world coordinates
+    public static Matrix4 toWorld;                        // transform to world coordinates
 
     Matrix4 rotation;                       // rotate world
+
     float transFX = 0, transFY = 0, transFZ = 0, transLX = 0, transLY = 0, transLZ = 0;
 
     // initialize
@@ -46,43 +43,31 @@ class Game
         // load teapot
         teapot = new Mesh("../../assets/teapot.obj");
         floor = new Mesh("../../assets/floor.obj");
-        sphere = new Mesh("../../assets/sphere.obj");
-
         // initialize stopwatch
         timer = new Stopwatch();
         timer.Reset();
         timer.Start();
-
         // create shaders
         shader = new Shader("../../shaders/vs.glsl", "../../shaders/fs.glsl");
         skyshader = new Shader("../../shaders/vs_skydome.glsl", "../../shaders/fs_skydome.glsl");
         postproc = new Shader("../../shaders/vs_post.glsl", "../../shaders/fs_post.glsl");
-
         // load a texture
         wood = new Texture("../../assets/wood.jpg");
         skytex = new Texture("../../assets/space.jpg");
-
         // create the render target
         target = new RenderTarget(screen.width, screen.height);
         quad = new ScreenQuad();
-
         // create scenegraph and main object
         sceneGraph = new SceneGraph();
-
         // initialize matrices
         cameraMatrix = Matrix4.Identity;
-        worldMatrix = Matrix4.Identity;
+        worldMatrix = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
         rotation = Matrix4.Identity;
-        toWorld = cameraMatrix;
-
         // ambient light preparation
         int ambientID = GL.GetUniformLocation(shader.programID, "ambientColor");
         GL.UseProgram(shader.programID);
         GL.Uniform3(ambientID, 0.4f, 0.1f, 0.0f);
-
         // prepare scene
-        camera = new SceneObject(null, null, 0, null, Matrix4.CreateTranslation(0,0, 0), toWorld, null);
-        world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
         CreateScene();
     }
 
@@ -104,10 +89,17 @@ class Game
         timer.Reset();
         timer.Start();
 
-
-        world.MainTransform = worldMatrix * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
-        toWorld = world.MainTransform;
-        world.MainTransform *= Matrix4.CreateTranslation(0, -5, -15) * rotation * Matrix4.CreateTranslation(transLX, transLY, transLZ) * Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
+        // working object location
+        //split up for easier debugging
+        Matrix4 transform = Matrix4.Identity;
+        transform *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
+        transform *= Matrix4.CreateTranslation(0, -5, -15);
+        transform *= rotation; // rotation before movement makes the player move in the direction the camera is facing.
+        transform *= Matrix4.CreateTranslation(transLX, transLY, transLZ);
+        toWorld = transform;
+        transform *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
+        world.mainTransform = transform;
+        UpdateScene();
 
         // update rotation
         a += 0.0001f * frameDuration;
@@ -135,25 +127,30 @@ class Game
     // compose a scene
     public void CreateScene()
     {
-        // objects
-        tp = new SceneObject(teapot, shader, 1f, wood, Matrix4.CreateTranslation(-3,-2f,5), toWorld, world);
-        SceneObject fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, tp);
+        camera = new SceneObject(null, null, 0, null, cameraMatrix, toWorld, null);
+        world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
 
-        // skydome
-        SceneObject skydome1 = new SceneObject(teapot, skyshader, 0, skytex, Matrix4.CreateTranslation(0,-3,0) * Matrix4.CreateScale(100), toWorld, world);
+        tp = new SceneObject(teapot, shader, 1, wood, Matrix4.Identity, toWorld, world);
+        fl = new SceneObject(floor, shader, 1, wood, Matrix4.CreateScale(1), toWorld, world);
 
-        //  lights
-        Light light0 = new Light(0, new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.CreateTranslation(0, 0, -15), toWorld, world);
-        Light light1 = new Light(1, new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.CreateTranslation(0, 0, -15), toWorld, world);
-        Light light2 = new Light(2, new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.CreateTranslation(0, 0, -15), toWorld, world);
-        Light light3 = new Light(3, new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.CreateTranslation(0, 0, -15), toWorld, world);
+        skypot = new SceneObject(teapot, skyshader, 0, skytex, Matrix4.CreateScale(100), toWorld, world);
+
+        // sorry for the code
+        light0 = new Light(0, new Vector3(0, 10, -10), new Vector3(10.0f, 10.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
+        light1 = new Light(1, new Vector3(0, 0, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
+        light2 = new Light(2, new Vector3(-5, 0, 0), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
+        light3 = new Light(3, new Vector3(5, 0, 0), new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
+    }
+
+    public void UpdateScene()
+    {
+        skypot.mainTransform = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), -a) * Matrix4.CreateTranslation(0, -3, 0) * Matrix4.CreateScale(10) ;
     }
 
     public void HandleInput()
     {
         KeyboardState k = Keyboard.GetState();
-        //working left right up down zoom in zoom out
-       	if (k.IsKeyDown(Key.Up))
+        if (k.IsKeyDown(Key.Up))
             transLY -= 0.1f;
         if (k.IsKeyDown(Key.Down))
             transLY += 0.1f;
@@ -166,7 +163,7 @@ class Game
         if (k.IsKeyDown(Key.Minus))
             transLZ -= 0.1f;
         if (k.IsKeyDown(Key.W) || k.IsKeyDown(Key.A) || k.IsKeyDown(Key.S) || k.IsKeyDown(Key.D))
-       {
+        {
             rotation = Matrix4.Identity;
             if (k.IsKeyDown(Key.W))
                 transFX -= 0.01f;
@@ -178,7 +175,8 @@ class Game
                 transFY += 0.01f;
             rotation *= Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), transFX);
             rotation *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), transFY);
+            rotation *= Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), transFX);
+            rotation *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), transFY);
         }
-        
     }
 }

@@ -17,21 +17,19 @@ class GraphObjects
 
     public GraphObjects(Matrix4 transform, Matrix4 toWorld, GraphObjects parent)
     {
+        children = new List<GraphObjects>();
         mainTransform = transform;
         this.toWorld = toWorld;
 
         if (parent != null)
         {
             this.parent = parent;
-
             parent.children.Add(this);
         }
             this.transform = transform;
 
 
-        SceneGraph.graphObjects.Add(this);
-
-        children = new List<GraphObjects>();
+        //SceneGraph.graphObjects.Add(this);
     }
 
     public virtual void Render()
