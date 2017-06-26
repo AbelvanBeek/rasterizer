@@ -131,12 +131,12 @@ class Game
         world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
 
         tp = new SceneObject(teapot, shader, 1, wood, Matrix4.Identity, toWorld, world);
-        fl = new SceneObject(floor, shader, 1, wood, Matrix4.CreateScale(10), toWorld, world);
+        fl = new SceneObject(floor, shader, 1, wood, Matrix4.CreateScale(1), toWorld, world);
 
         skypot = new SceneObject(teapot, skyshader, 0, skytex, Matrix4.CreateScale(100), toWorld, world);
 
         // sorry for the code
-        light0 = new Light(0, new Vector3(0, 10, 0), new Vector3(10.0f, 10.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
+        light0 = new Light(0, new Vector3(0, 10, -10), new Vector3(10.0f, 10.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
         light1 = new Light(1, new Vector3(0, 0, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
         light2 = new Light(2, new Vector3(-5, 0, 0), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
         light3 = new Light(3, new Vector3(5, 0, 0), new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
