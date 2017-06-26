@@ -9,10 +9,10 @@ uniform sampler2D pixels;		// input texture (1st pass render target)
 out vec3 outputColor;
 
 // vignette variables
-const vec3 vignetteColor = vec3(0.0, 0.0, 0.0); const float vignetteRadius = 0.75; const float vignetteSoftness = 0.35;
+const float vignetteRadius = 0.5; const float vignetteSoftness = 0.2;
 
 // chromatic abberation variables
-const float chromaticIntensity = 0.5; const vec2 chromaticRed = vec2(0.01, 0); const vec2 chromaticGreen = vec2(0, 0.01); const vec2 chromaticBlue = vec2(0.01, 0.01);
+const float chromaticIntensity = 0.45; const vec2 chromaticRed = vec2(0.01, 0); const vec2 chromaticGreen = vec2(0, 0.01); const vec2 chromaticBlue = vec2(0.01, 0.01);
 
 void main()
 {
