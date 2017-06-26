@@ -12,7 +12,7 @@ out vec3 outputColor;
 const float vignetteRadius = 0.5; const float vignetteSoftness = 0.2;
 
 // chromatic abberation variables
-const float chromaticIntensity = 0.45; const vec2 chromaticRed = vec2(0.01, 0); const vec2 chromaticGreen = vec2(0, 0.01); const vec2 chromaticBlue = vec2(0.01, 0.01);
+const float chromaticIntensity = 0.2; const vec2 chromaticRed = vec2(0.01, 0); const vec2 chromaticGreen = vec2(0, 0.01); const vec2 chromaticBlue = vec2(0.01, 0.01);
 
 void main()
 {

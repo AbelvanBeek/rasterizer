@@ -71,5 +71,5 @@ void main()
 	specColor3 = clamp(specColor3, 0.0, 1.0);
 	outputColor += vec4( materialColor3 * max( 0.0f, dot( L3, normal.xyz ) ) * attenuation3 * lightColor3, 1 ) + specColor3 * spec;
 
-	outputColor += vec4(ambientColor, 1);
+	outputColor += vec4(ambientColor * materialColor0, 1);
 }
