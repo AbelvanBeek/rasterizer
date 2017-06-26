@@ -162,7 +162,7 @@ class Game
             transLZ += 0.1f;
         if (k.IsKeyDown(Key.Minus))
             transLZ -= 0.1f;
-        if (k.IsKeyDown(Key.W) || k.IsKeyDown(Key.A) || k.IsKeyDown(Key.S) || k.IsKeyDown(Key.D))
+        if (k.IsKeyDown(Key.W) || k.IsKeyDown(Key.A) || k.IsKeyDown(Key.S) || k.IsKeyDown(Key.D) || k.IsKeyDown(Key.Z) || k.IsKeyDown(Key.X))
         {
             rotation = Matrix4.Identity;
             if (k.IsKeyDown(Key.W))
@@ -173,10 +173,13 @@ class Game
                 transFX += 0.01f;
             if (k.IsKeyDown(Key.D))
                 transFY += 0.01f;
+            if (k.IsKeyDown(Key.Z))
+                transFZ += 0.01f;
+            if (k.IsKeyDown(Key.X))
+                transFZ -= 0.01f;
             rotation *= Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), transFX);
             rotation *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), transFY);
-            rotation *= Matrix4.CreateFromAxisAngle(new Vector3(1, 0, 0), transFX);
-            rotation *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), transFY);
+            rotation *= Matrix4.CreateFromAxisAngle(new Vector3(0, 0, 1), transFZ);
         }
     }
 }
