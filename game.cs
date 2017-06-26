@@ -16,7 +16,7 @@ class Game
     const float PI = 3.1415926535f;         // PI
     float a = 0;                            // teapot rotation angle
     Stopwatch timer;                        // timer for measuring frame duration
-    Shader shader;                          // shader to use for rendering
+    Shader shader, skyshader;                          // shader to use for rendering
     Shader postproc;                        // shader to use for post processing
     Texture wood;                           // texture to use for rendering
     Texture skytex;
@@ -49,6 +49,7 @@ class Game
         timer.Start();
         // create shaders
         shader = new Shader("../../shaders/vs.glsl", "../../shaders/fs.glsl");
+        skyshader = new Shader("../../shaders/vs_skydome.glsl", "../../shaders/fs_skydome.glsl");
         postproc = new Shader("../../shaders/vs_post.glsl", "../../shaders/fs_post.glsl");
         // load a texture
         wood = new Texture("../../assets/wood.jpg");
@@ -92,12 +93,13 @@ class Game
         //split up for easier debugging
         Matrix4 transform = Matrix4.Identity;
         transform *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), a);
-        toWorld = transform;
         transform *= Matrix4.CreateTranslation(0, -5, -15);
         transform *= rotation; // rotation before movement makes the player move in the direction the camera is facing.
         transform *= Matrix4.CreateTranslation(transLX, transLY, transLZ);
+        toWorld = transform;
         transform *= Matrix4.CreatePerspectiveFieldOfView(1.2f, 1.3f, .1f, 1000);
         world.mainTransform = transform;
+        UpdateScene();
 
         // update rotation
         a += 0.001f * frameDuration;
@@ -128,16 +130,21 @@ class Game
         camera = new SceneObject(null, null, 0, null, cameraMatrix, toWorld, null);
         world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
 
-        tp = new SceneObject(teapot, shader, 1,  wood, Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), -a), toWorld, world);
-        fl = new SceneObject(floor, shader, 1, wood, Matrix4.Identity, toWorld, world);
+        tp = new SceneObject(teapot, shader, 1, wood, Matrix4.Identity, toWorld, world);
+        fl = new SceneObject(floor, shader, 1, wood, Matrix4.CreateScale(10), toWorld, world);
 
-        skypot = new SceneObject(teapot, shader, 0, skytex, Matrix4.CreateScale(100), toWorld, world);
+        skypot = new SceneObject(teapot, skyshader, 0, skytex, Matrix4.CreateScale(100), toWorld, world);
 
         // sorry for the code
-        light0 = new Light(0, new Vector3(0, 10, -10), new Vector3(10.0f, 10.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
-        light1 = new Light(1, new Vector3(-10, 3, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
-        light2 = new Light(2, new Vector3(0, 3, 10), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
-        light3 = new Light(3, new Vector3(0, 3, -10), new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
+        light0 = new Light(0, new Vector3(0, 10, 0), new Vector3(10.0f, 10.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
+        light1 = new Light(1, new Vector3(0, 0, 0), new Vector3(0.0f, 0.0f, 10.0f), shader, Matrix4.Identity, toWorld, world);
+        light2 = new Light(2, new Vector3(-5, 0, 0), new Vector3(0.0f, 10.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
+        light3 = new Light(3, new Vector3(5, 0, 0), new Vector3(10.0f, 0.0f, 0.0f), shader, Matrix4.Identity, toWorld, world);
+    }
+
+    public void UpdateScene()
+    {
+        skypot.mainTransform = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), -a) * Matrix4.CreateTranslation(0, -3, 0) * Matrix4.CreateScale(10) ;
     }
 
     public void HandleInput()
