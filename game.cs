@@ -102,7 +102,7 @@ class Game
         UpdateScene();
 
         // update rotation
-        a += 0.0001f * frameDuration;
+        a += 0.001f * frameDuration;
         if (a > 2 * PI) a -= 2 * PI;
 
         if (useRenderTarget)
