@@ -9,10 +9,10 @@ uniform sampler2D pixels;		// input texture (1st pass render target)
 out vec3 outputColor;
 
 // vignette variables
-const float vignetteRadius = 0.6; const float vignetteSoftness = 0.2;
+const float vignetteRadius = 0.8; const float vignetteSoftness = 0.5;
 
 // chromatic abberation variables
-const float chromaticIntensity = 0.2; const vec2 chromaticRed = vec2(0.01, 0); const vec2 chromaticGreen = vec2(0, 0.01); const vec2 chromaticBlue = vec2(0.01, 0.01);
+const float chromaticIntensity = 1; const vec2 chromaticRed = vec2(0.01, 0); const vec2 chromaticGreen = vec2(0, 0.01); const vec2 chromaticBlue = vec2(0.01, 0.01);
 
 void main()
 {
@@ -23,9 +23,9 @@ void main()
 	outputColor = texture( pixels, uv ).rgb;
 
 	// apply chromatic abberation
-	vec3 rValue = texture(pixels, uv - (chromaticRed * (uv - center)) * chromaticIntensity).rgb;
-	vec3 gValue = texture(pixels, uv - (chromaticGreen * (uv - center)) * chromaticIntensity).rgb;
-	vec3 bValue = texture(pixels, uv - (chromaticBlue * (uv - center)) * chromaticIntensity).rgb;
+	vec3 rValue = texture(pixels, uv - chromaticRed * center * chromaticIntensity).rgb;
+	vec3 gValue = texture(pixels, uv - chromaticGreen * center * chromaticIntensity).rgb;
+	vec3 bValue = texture(pixels, uv - chromaticBlue * center * chromaticIntensity).rgb;
 	outputColor =  vec3(rValue.r, gValue.g, bValue.b);
 	
 	//outputColor = vec3(1.0, 1.0, 1.0);

@@ -13,7 +13,7 @@ class GraphObjects
 
     public GraphObjects parent;
 
-    public List<GraphObjects> children;
+    public List<GraphObjects> children; //every graphobject keeps a lsit of its children
 
     public GraphObjects(Matrix4 transform, Matrix4 toWorld, GraphObjects parent)
     {
@@ -27,14 +27,10 @@ class GraphObjects
             parent.children.Add(this);
         }
             this.transform = transform;
-
-
-        //SceneGraph.graphObjects.Add(this);
     }
 
     public virtual void Render()
     {
-        //transform = parent.transform * mainTransform;
     }
     public Matrix4 MainTransform
     {

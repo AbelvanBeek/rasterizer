@@ -22,13 +22,13 @@ class SceneObject : GraphObjects
 
     public override void Render()
     {
-        toWorld = Game.toWorld;
-        transform = mainTransform;
+        transform = mainTransform; //make a copy of maintransform so that we don't transform into infinity
         if (parent != null)
-           transform *= parent.transform;
+           transform *= parent.transform; //if the sceneobject has a parent, apply its matrix to its own matrix
         if (mesh != null)
         {
-                mesh.Render(shader, specness, transform , texture);
+            //if the object has a mesh, render it.
+            mesh.Render(shader, specness, transform, texture);
         }
 
     }
