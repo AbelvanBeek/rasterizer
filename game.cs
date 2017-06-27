@@ -137,21 +137,21 @@ class Game
         camera = new SceneObject(null, null, 0, null, cameraMatrix, toWorld, null);
         world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
 
-        tp = new SceneObject(teapot, shader, 1, wood, Matrix4.Identity, toWorld, world);
+        tp = new SceneObject(teapot, shader, 1, skyscraper, Matrix4.Identity, toWorld, world);
         town = new SceneObject(city, skyshader, 1, windows, Matrix4.CreateScale(1) * Matrix4.CreateTranslation(0, -500, 0), toWorld, world);
         road = new SceneObject(floor, skyshader, 0, asphalt, Matrix4.CreateTranslation(-3, 0, -8) * Matrix4.CreateScale(135, 0, 100) , toWorld, town);
         skycrap = new SceneObject(teapot, shader, 1, skyscraper, Matrix4.CreateRotationY(-PI/4) * Matrix4.CreateTranslation(26, 3.1f, 12.5f) * Matrix4.CreateScale(30), toWorld, world);
 
-        tp0 = new SceneObject(teapot, shader, 0, wood, Matrix4.Identity, toWorld, tp);
-        tp1 = new SceneObject(teapot, shader, 0, wood, Matrix4.Identity, toWorld, tp);
-        tp2 = new SceneObject(teapot, shader, 0, wood, Matrix4.Identity, toWorld, tp);
+        tp0 = new SceneObject(teapot, shader, 0, skyscraper, Matrix4.Identity, toWorld, tp);
+        tp1 = new SceneObject(teapot, shader, 0, skyscraper, Matrix4.Identity, toWorld, tp);
+        tp2 = new SceneObject(teapot, shader, 0, skyscraper, Matrix4.Identity, toWorld, tp);
         teapots.Add(tp0); teapots.Add(tp1); teapots.Add(tp2);
 
         for (int i = 1; i < 100; i++)
         {
-            teapots.Add(new SceneObject(teapot, shader, 1, wood, Matrix4.CreateTranslation(-5, i * 2, 5) * Matrix4.CreateRotationY(PI / 8), toWorld, teapots[3 * i - 3]));
-            teapots.Add(new SceneObject(teapot, shader, 1, wood, Matrix4.CreateTranslation(20, i * 2, 5) * Matrix4.CreateRotationY(PI / 8), toWorld, teapots[3 * i - 2]));
-            teapots.Add(new SceneObject(teapot, shader, 1, wood, Matrix4.CreateTranslation(-20, i * 2, 5) * Matrix4.CreateRotationY(PI / 8), toWorld, teapots[3 * i - 1]));
+            teapots.Add(new SceneObject(teapot, shader, 1, skyscraper, Matrix4.CreateTranslation(-5, i * 2, 5) * Matrix4.CreateRotationY(PI / 8), toWorld, teapots[3 * i - 3]));
+            teapots.Add(new SceneObject(teapot, shader, 1, skyscraper, Matrix4.CreateTranslation(20, i * 2, 5) * Matrix4.CreateRotationY(PI / 8), toWorld, teapots[3 * i - 2]));
+            teapots.Add(new SceneObject(teapot, shader, 1, skyscraper, Matrix4.CreateTranslation(-20, i * 2, 5) * Matrix4.CreateRotationY(PI / 8), toWorld, teapots[3 * i - 1]));
         }
 
         skypot = new SceneObject(teapot, skyshader, 0, skytex, Matrix4.CreateScale(10), toWorld, world);
