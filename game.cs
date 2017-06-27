@@ -103,7 +103,7 @@ class Game
         // working object location
         //split up for easier debugging
         Matrix4 transform = Matrix4.Identity;
-        //transform *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), -a*2f);
+        transform *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), -a*0.02f);
         transform *= Matrix4.CreateTranslation(-400, -550, -1300);
         transform *= rotation; // rotation before movement makes the player move in the direction the camera is facing.
         transform *= Matrix4.CreateTranslation(transLX, transLY, transLZ);
