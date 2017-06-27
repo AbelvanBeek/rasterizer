@@ -35,11 +35,10 @@ void main()
 	L0 = normalize( L0 );
 	vec3 materialColor0 = texture( pixels, uv ).xyz;
 	float attenuation0 = 1.0f / (dist0 * dist0);
-
-	vec3 R0 = normalize((-worldPos.xyz -2*(dot(-worldPos.xyz, normal.xyz)*normal.xyz)));
+	vec3 R0 = normalize(-(-worldPos.xyz -2*(dot(-worldPos.xyz, normal.xyz)*normal.xyz)));
 	vec4 specColor0 = vec4(lightColor0, 1) * pow(max(dot(R0, L0), 0.0), 0.3*100) * (materialColor0, 1);
 	specColor0 = clamp(specColor0, 0.0, 1.0);
-	outputColor += vec4( materialColor0 * max( 0.0f, dot( L0, normal.xyz ) ) * attenuation0 * lightColor0, 1 ) + specColor0 * spec;
+	outputColor += (1-spec/2) * vec4( materialColor0 * max( 0.0f, dot( L0, normal.xyz ) ) * attenuation0 * lightColor0, 1 ) + specColor0 * spec/2;
 
 	vec3 L1 = lightPos1 - worldPos.xyz;
 	float dist1 = L1.length();
@@ -49,7 +48,7 @@ void main()
 	vec3 R1 = normalize(-(-worldPos.xyz -2*(dot(-worldPos.xyz, normal.xyz)*normal.xyz)));
 	vec4 specColor1 = vec4(lightColor1, 1) * pow(max(dot(R1, L1), 0.0), 0.3*100) * (materialColor1, 1);
 	specColor1 = clamp(specColor1, 0.0, 1.0);
-	outputColor += vec4( materialColor1 * max( 0.0f, dot( L1, normal.xyz ) ) * attenuation1 * lightColor1, 1 ) + specColor1 * spec;
+	outputColor += (1-spec/2) * vec4( materialColor1 * max( 0.0f, dot( L1, normal.xyz ) ) * attenuation1 * lightColor1, 1 ) + specColor1 * spec/2;
 
 	vec3 L2 = lightPos2 - worldPos.xyz;
 	float dist2 = L2.length();
@@ -59,7 +58,7 @@ void main()
 	vec3 R2 = normalize(-(-worldPos.xyz -2*(dot(-worldPos.xyz, normal.xyz)*normal.xyz)));
 	vec4 specColor2 = vec4(lightColor2, 1) * pow(max(dot(R2, L2), 0.0), 0.3*100) * (materialColor2, 1);
 	specColor2 = clamp(specColor2, 0.0, 1.0);
-	outputColor += vec4( materialColor2 * max( 0.0f, dot( L2, normal.xyz ) ) * attenuation2 * lightColor2, 1 ) + specColor2 * spec;
+	outputColor += (1-spec/2) * vec4( materialColor2 * max( 0.0f, dot( L2, normal.xyz ) ) * attenuation2 * lightColor2, 1 ) + specColor2 * spec/2;
 
 	vec3 L3 = lightPos3 - worldPos.xyz;
 	float dist3 = L3.length();
@@ -69,7 +68,7 @@ void main()
 	vec3 R3 = normalize(-(-worldPos.xyz -2*(dot(-worldPos.xyz, normal.xyz)*normal.xyz)));
 	vec4 specColor3 = vec4(lightColor3, 1) * pow(max(dot(R3, L3), 0.0), 0.3*100) * (materialColor3, 1);
 	specColor3 = clamp(specColor3, 0.0, 1.0);
-	outputColor += vec4( materialColor3 * max( 0.0f, dot( L3, normal.xyz ) ) * attenuation3 * lightColor3, 1 ) + specColor3 * spec;
+	outputColor += (1-spec/2) * vec4( materialColor3 * max( 0.0f, dot( L3, normal.xyz ) ) * attenuation3 * lightColor3, 1 ) + specColor3 * spec/2;
 
 	outputColor += vec4(ambientColor * materialColor0, 1);
 }

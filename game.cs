@@ -13,19 +13,19 @@ class Game
 {
     // member variables
     public Surface screen;                  // background surface for printing etc.
-    Mesh teapot, floor, city, scraper;                     // a mesh to draw using OpenGL
+    Mesh teapot, floor, city, scraper, mountain, moon;                     // a mesh to draw using OpenGL
     const float PI = 3.1415926535f;         // PI
     float a = 0;                            // teapot rotation angle
     Stopwatch timer;                        // timer for measuring frame duration
     Shader shader, skyshader;                          // shader to use for rendering
     Shader postproc;                        // shader to use for post processing
-    Texture wood, skytex, windows, asphalt, skyscraper;                           // texture to use for rendering
+    Texture wood, skytex, windows, asphalt, skyscraper, mnt, planet;                           // texture to use for rendering
     RenderTarget target;                    // intermediate render target
     ScreenQuad quad;                        // screen filling quad for post processing
     bool useRenderTarget = true;
 
     SceneGraph sceneGraph;                  // create new scenegraph
-    public static SceneObject camera, world, tp, tp0, tp1, tp2, town, skypot, road, skycrap;      // Used sceneobjects
+    public static SceneObject camera, world, tp, tp0, tp1, tp2, town, skypot, road, skycrap, mount, mooney;      // Used sceneobjects
     List<SceneObject> teapots;              // list of all teapots in scene
     Light light0, light1, light2, light3;
 
@@ -46,6 +46,8 @@ class Game
         floor = new Mesh("../../assets/floor.obj");
         city = new Mesh("../../assets/city.obj");
         scraper = new Mesh("../../assets/scraper.obj");
+        mountain = new Mesh("../../assets/mountain.obj");
+        moon = new Mesh("../../assets/moon.obj");
         // initialize stopwatch
         timer = new Stopwatch();
         timer.Reset();
@@ -60,6 +62,8 @@ class Game
         windows = new Texture("../../assets/city.jpg");
         asphalt = new Texture("../../assets/asphalt.jpg");
         skyscraper = new Texture("../../assets/skyscraper.jpg");
+        mnt = new Texture("../../assets/grass.jpg");
+        planet = new Texture("../../assets/moon.jpg");
         // create the render target
         target = new RenderTarget(screen.width, screen.height);
         quad = new ScreenQuad();
@@ -100,7 +104,7 @@ class Game
         //split up for easier debugging
         Matrix4 transform = Matrix4.Identity;
         //transform *= Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), -a*2f);
-        transform *= Matrix4.CreateTranslation(-400, -300, -1100);
+        transform *= Matrix4.CreateTranslation(-400, -550, -1300);
         transform *= rotation; // rotation before movement makes the player move in the direction the camera is facing.
         transform *= Matrix4.CreateTranslation(transLX, transLY, transLZ);
         toWorld = transform;
@@ -138,9 +142,16 @@ class Game
         world = new SceneObject(null, null, 0, null, worldMatrix, toWorld, camera);
 
         tp = new SceneObject(teapot, shader, 1, skyscraper, Matrix4.Identity, toWorld, world);
-        town = new SceneObject(city, skyshader, 1, windows, Matrix4.CreateScale(1) * Matrix4.CreateTranslation(0, -500, 0), toWorld, world);
-        road = new SceneObject(floor, skyshader, 0, asphalt, Matrix4.CreateTranslation(-3, 0, -8) * Matrix4.CreateScale(135, 0, 100) , toWorld, town);
+        town = new SceneObject(city, shader, 1, windows, Matrix4.CreateTranslation(450, -100, 600), toWorld, world);
+        road = new SceneObject(floor, shader, 0, asphalt, Matrix4.CreateTranslation(-3, 0, -8) * Matrix4.CreateScale(135, 0, 100) , toWorld, town);
         skycrap = new SceneObject(teapot, shader, 1, skyscraper, Matrix4.CreateRotationY(-PI/4) * Matrix4.CreateTranslation(26, 3.1f, 12.5f) * Matrix4.CreateScale(30), toWorld, world);
+
+        mount = new SceneObject(mountain, shader, 0.1f, mnt, Matrix4.CreateScale(500, 1000, 500) * Matrix4.CreateTranslation(0, 0, -3800), toWorld, town);
+        SceneObject mount1 = new SceneObject(mountain, shader, 0.1f, mnt, Matrix4.CreateScale(500, 1000, 500) * Matrix4.CreateTranslation(-3000, 0, -2000), toWorld, town);
+        SceneObject mount2 = new SceneObject(mountain, shader, 0.1f, mnt, Matrix4.CreateScale(500, 1000, 500) * Matrix4.CreateTranslation(2000, 0, -2000), toWorld, town);
+        SceneObject mount3 = new SceneObject(mountain, shader, 0.1f, mnt, Matrix4.CreateScale(500, 300, 200) * Matrix4.CreateTranslation(0, -1, 500), toWorld, town);
+
+        mooney = new SceneObject(moon, shader, 0f, planet, Matrix4.CreateScale(10) * Matrix4.CreateTranslation(-3000, 3000, -12000), toWorld, world);
 
         tp0 = new SceneObject(teapot, shader, 0, skyscraper, Matrix4.Identity, toWorld, tp);
         tp1 = new SceneObject(teapot, shader, 0, skyscraper, Matrix4.Identity, toWorld, tp);
@@ -154,10 +165,10 @@ class Game
             teapots.Add(new SceneObject(teapot, shader, 1, skyscraper, Matrix4.CreateTranslation(-20, i * 2, 5) * Matrix4.CreateRotationY(PI / 8), toWorld, teapots[3 * i - 1]));
         }
 
-        skypot = new SceneObject(teapot, skyshader, 0, skytex, Matrix4.CreateScale(10), toWorld, world);
+        skypot = new SceneObject(teapot, skyshader, 0, skytex, Matrix4.CreateScale(1000), toWorld, world);
 
         // sorry for the code
-        light0 = new Light(0, new Vector3(100, 100, 0), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
+        light0 = new Light(0, new Vector3(100, 1000, -10000), new Vector3(20.0f, 20.0f, 20.0f), shader, Matrix4.Identity, toWorld, world);
         light1 = new Light(1, new Vector3(-100, 100, 0), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
         light2 = new Light(2, new Vector3(0, 100, 100), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
         light3 = new Light(3, new Vector3(0, 100, -100), new Vector3(2.0f, 2.0f, 2.0f), shader, Matrix4.Identity, toWorld, world);
@@ -165,9 +176,9 @@ class Game
 
     public void UpdateScene()
     {
-        skypot.mainTransform = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), 0.01f * a) * Matrix4.CreateTranslation(0, -3, 0) * Matrix4.CreateScale(1000);
+        skypot.mainTransform = Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), 0.01f * a) * Matrix4.CreateTranslation(0, -1, 0) * Matrix4.CreateScale(10000);
         tp.mainTransform = Matrix4.CreateScale(2f) * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), 5 * a);
-        town.mainTransform = Matrix4.CreateTranslation(450, -100, 600);
+        mooney.mainTransform =Matrix4.CreateScale(10) * Matrix4.CreateTranslation(-3000, 4000, -12000) * Matrix4.CreateFromAxisAngle(new Vector3(0, 1, 0), 0.1f * -a);
     }
 
     public void HandleInput()
