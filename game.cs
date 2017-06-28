@@ -38,6 +38,8 @@ class Game
 
     float transFX = 0, transFY = 0, transFZ = 0, transLX = 0, transLY = 0, transLZ = 0; //rotation and translation variables;
 
+    System.Media.SoundPlayer sound;         // for music
+
     // initialize
     public void Init()
     {
@@ -78,6 +80,11 @@ class Game
         int ambientID = GL.GetUniformLocation(shader.programID, "ambientColor");
         GL.UseProgram(shader.programID);
         GL.Uniform3(ambientID, 0.25f, 0.25f, 0.25f);
+        // prepare sound
+        sound = new System.Media.SoundPlayer();
+        sound.SoundLocation = "../../assets/ori.wav";
+        sound.LoadAsync();
+        sound.PlayLooping();
         // prepare scene
         CreateScene();
     }
